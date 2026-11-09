@@ -1,0 +1,649 @@
+{
+  "name": "Lead Intake",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 1 · Lead Intake\nReceives leads from two sources and turns them into one format.\n\n- **Lead Form** (n8n Form) and **Gmail Trigger** (label `Leads`, checked every minute)\n- **Normalize** nodes map both sources to the same 13 fields\n- **Pre-filter** drops obvious spam for free, before any AI call: invalid email, disposable domain, message under 15 characters, no-reply sender, your own address\n- Spam → **Spam log** · real leads → **Lead Processing**\n\n**Setup:** put your inbox address in `OWN_EMAILS` (Pre-filter), then choose your Gmail label, spreadsheet and the Lead Processing workflow.",
+        "height": 320,
+        "width": 760
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1680,
+        -840
+      ],
+      "id": "f8c6e07b-7cda-4754-8e42-f286a6244766",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "formTitle": "Automation Project Request",
+        "formDescription": "Tell us about your project and we'll get back to you within 24 hours.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full name",
+              "fieldName": "name",
+              "placeholder": "John Smith",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "fieldName": "email",
+              "placeholder": "you@company.com",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company (optional)",
+              "fieldName": "company",
+              "placeholder": "Acme Inc."
+            },
+            {
+              "fieldLabel": "Website (optional)",
+              "fieldName": "website",
+              "placeholder": "https://example.com"
+            },
+            {
+              "fieldLabel": "Budget",
+              "fieldType": "dropdown",
+              "fieldName": "budget",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Under €1,000"
+                  },
+                  {
+                    "option": "€1,000 - €5,000"
+                  },
+                  {
+                    "option": "€5,000 - €15,000"
+                  },
+                  {
+                    "option": "Over €15,000"
+                  },
+                  {
+                    "option": "Not sure"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Timeline",
+              "fieldType": "dropdown",
+              "fieldName": "timeline",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "This month"
+                  },
+                  {
+                    "option": "1-3 months"
+                  },
+                  {
+                    "option": "Later"
+                  },
+                  {
+                    "option": "Just exploring"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Message",
+              "fieldType": "textarea",
+              "fieldName": "message",
+              "placeholder": "What do you want to automate?",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Send request",
+          "path": "lead"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -1584,
+        -432
+      ],
+      "id": "acd1338b-1cf5-41fe-8ef7-a9fb786fa207",
+      "name": "Lead Form",
+      "webhookId": "52acd7e4-e17b-44f5-96f2-b737aabdaaeb"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "labelIds": [
+            "YOUR_LEADS_LABEL_ID"
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -1600,
+        -176
+      ],
+      "id": "4acc02ef-4fa1-452e-bd5b-0cf359044308",
+      "name": "Gmail Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "06138190-797e-4ca6-a344-3c75bf43b762",
+              "name": "source",
+              "value": "form",
+              "type": "string"
+            },
+            {
+              "id": "5945fee0-5c61-444f-b42a-977621607308",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "fe2ef4a3-5b4a-4509-ab54-41a72b1bbe8c",
+              "name": "email",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "5e3b3f82-f30a-4bc6-82d5-ca9ba0531cde",
+              "name": "company",
+              "value": "={{ $json.company }}",
+              "type": "string"
+            },
+            {
+              "id": "04ce0b1b-7f5f-46b0-99b0-6862dc328055",
+              "name": "message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "1b20aab1-f4d5-4b25-bdd3-860c9c237b27",
+              "name": "budget",
+              "value": "={{ $json.budget }}",
+              "type": "string"
+            },
+            {
+              "id": "9a40a018-26e9-4460-ae9d-bc46f35d2896",
+              "name": "timeline",
+              "value": "={{ $json.timeline }}",
+              "type": "string"
+            },
+            {
+              "id": "acabbfff-0c88-4bc3-8104-1fde03880722",
+              "name": "subject",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "87070a6a-d4e8-4fc6-be23-62c9301fc137",
+              "name": "website",
+              "value": "={{ $json.website }}",
+              "type": "string"
+            },
+            {
+              "id": "dc9ebd08-b2aa-498f-a16d-f6a434bdf0b1",
+              "name": "received_at",
+              "value": "={{ $json.submittedAt }}",
+              "type": "string"
+            },
+            {
+              "id": "5e55c8be-b312-43ae-b7a9-58d0e00df735",
+              "name": "source_id",
+              "value": "={{ $execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "6882b9fb-04a5-4fa9-af2b-11356fe3b4eb",
+              "name": "processed_at",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "b59756a1-3cc7-468e-a2fd-1075f53f6b70",
+              "name": "thread_id",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -1328,
+        -416
+      ],
+      "id": "76adca74-7d87-4ac3-96c3-c8df55308dc7",
+      "name": "Normalize Form Lead"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "06138190-797e-4ca6-a344-3c75bf43b762",
+              "name": "source",
+              "value": "email",
+              "type": "string"
+            },
+            {
+              "id": "5945fee0-5c61-444f-b42a-977621607308",
+              "name": "name",
+              "value": "={{ $json.from.value[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "fe2ef4a3-5b4a-4509-ab54-41a72b1bbe8c",
+              "name": "email",
+              "value": "={{ $json.from.value[0].address }}",
+              "type": "string"
+            },
+            {
+              "id": "d96628c2-632b-45bb-be8d-fc236fe8d3a1",
+              "name": "subject",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "b0774e60-9e38-444b-b072-d46730352c01",
+              "name": "company",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "04ce0b1b-7f5f-46b0-99b0-6862dc328055",
+              "name": "message",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "9a40a018-26e9-4460-ae9d-bc46f35d2896",
+              "name": "timeline",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "1b20aab1-f4d5-4b25-bdd3-860c9c237b27",
+              "name": "budget",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "87070a6a-d4e8-4fc6-be23-62c9301fc137",
+              "name": "website",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "dc9ebd08-b2aa-498f-a16d-f6a434bdf0b1",
+              "name": "received_at",
+              "value": "={{ DateTime.fromISO($json.date).toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "5e55c8be-b312-43ae-b7a9-58d0e00df735",
+              "name": "source_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "96e21db6-9879-4eb1-8790-58ee8bd38e1c",
+              "name": "processed_at",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "6778bf80-7bf2-4438-8ff0-4ebee9c76ec7",
+              "name": "thread_id",
+              "value": "={{ $json.threadId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -1328,
+        -176
+      ],
+      "id": "d60ece7a-2d37-4e3a-bf66-c217d4f03850",
+      "name": "Normalize Email Lead"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pre-filter: marks obvious spam before AI, so we don't spend tokens on it\n\nconst OWN_EMAILS = ['you@example.com']; // your inbox address(es)\n\nconst DISPOSABLE_DOMAINS = [\n  'mailinator.com', 'guerrillamail.com', 'guerrillamail.net', 'sharklasers.com',\n  '10minutemail.com', 'tempmail.com', 'temp-mail.org', 'temp-mail.io',\n  'yopmail.com', 'trashmail.com', 'getnada.com', 'maildrop.cc',\n  'dispostable.com', 'throwawaymail.com', 'fakeinbox.com', 'mailnesia.com',\n  'burnermail.io', 'emailondeck.com', 'mohmal.com', 'tempmailo.com'\n];\n\nconst NO_REPLY = /^(no[-_.]?reply|do[-_.]?not[-_.]?reply|mailer-daemon|postmaster)@/i;\nconst EMAIL_FORMAT = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\n\nconst email = String($json.email || '').trim().toLowerCase();\nconst message = String($json.message || '').trim();\nconst domain = email.split('@')[1] || '';\nconst emailWithoutTag = email.replace(/\\+[^@]*@/, '@'); // you+leads@ -> you@\n\nlet spamReason = '';\n\nif (!EMAIL_FORMAT.test(email)) {\n  spamReason = 'invalid_email';\n} else if (message.length < 15) {\n  spamReason = 'message_too_short';\n} else if (DISPOSABLE_DOMAINS.some(d => domain === d || domain.endsWith('.' + d))) {\n  spamReason = 'disposable_email';\n} else if (OWN_EMAILS.includes(emailWithoutTag)) {\n  spamReason = 'own_email';\n} else if (NO_REPLY.test(email)) {\n  spamReason = 'no_reply';\n}\n\nreturn {\n  json: {\n    ...$json,\n    email,\n    category: spamReason ? 'spam' : '',\n    spam_reason: spamReason,\n  },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -944,
+        -336
+      ],
+      "id": "00609a0f-6612-4cc8-947d-71d4fe3b8090",
+      "name": "Pre-filter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fc5eac8d-457b-4eb8-b060-3a328d1adebc",
+              "leftValue": "={{ $json.category }}",
+              "rightValue": "spam",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -720,
+        -336
+      ],
+      "id": "3d430020-37d7-40f8-94a8-cdb54bb00930",
+      "name": "Is Spam?"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "YOUR_LEAD_PROCESSING_WORKFLOW_ID",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -384,
+        -176
+      ],
+      "id": "9b69d26f-c1b5-4ffc-a80c-8ec46d6c5468",
+      "name": "Call 'Lead Processing'",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Spam log",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "received_at": "={{ DateTime.fromISO($json.received_at).toFormat('yyyy-MM-dd HH:mm') }}",
+            "source": "={{ $json.source }}",
+            "email": "={{ $json.email }}",
+            "company": "={{ $json.company }}",
+            "score": "",
+            "category": "spam",
+            "execution_id": "={{ $execution.id }}",
+            "summary": "",
+            "message": "={{ $json.message.replace(/(\\r?\\n\\s*)+/g, ' | ').trim() }}",
+            "spam_reason": "={{ $json.spam_reason }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "received_at",
+              "displayName": "received_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "spam_reason",
+              "displayName": "spam_reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "execution_id",
+              "displayName": "execution_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -448,
+        -448
+      ],
+      "id": "85989f36-ed4a-48ad-a8b5-1fa749459916",
+      "name": "Log Spam"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Email Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead Form": {
+      "main": [
+        [
+          {
+            "node": "Normalize Form Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Form Lead": {
+      "main": [
+        [
+          {
+            "node": "Pre-filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Email Lead": {
+      "main": [
+        [
+          {
+            "node": "Pre-filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pre-filter": {
+      "main": [
+        [
+          {
+            "node": "Is Spam?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Spam?": {
+      "main": [
+        [
+          {
+            "node": "Log Spam",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call 'Lead Processing'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "a0a91dfe-5fda-4a19-9eb9-f8aba02c06e8",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "id": "2zaUlDbwcuNanauc",
+  "tags": []
+}
